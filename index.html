@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archive Share Target</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Archive Share Settings</h1>
+        
+        <div class="card">
+            <label for="base-domain">Base Domain</label>
+            <input type="url" id="base-domain" placeholder="https://archive.fo">
+            <p class="hint">The domain used to construct the archive URL.</p>
+            
+            <div class="actions">
+                <button id="save-btn" class="primary">Save Settings</button>
+                <button id="reset-btn" class="secondary">Reset Default</button>
+            </div>
+        </div>
+
+        <div id="status-message" class="status hidden"></div>
+
+        <div class="info">
+            <p><strong>How to use:</strong></p>
+            <ol>
+                <li>Install this app on your device.</li>
+                <li>Share a URL from any other app.</li>
+                <li>Select "Archive Share Target" from the share menu.</li>
+            </ol>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
