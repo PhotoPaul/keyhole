@@ -6,6 +6,9 @@ const domainInput = document.getElementById('base-domain');
 const saveBtn = document.getElementById('save-btn');
 const resetBtn = document.getElementById('reset-btn');
 const statusMsg = document.getElementById('status-message');
+const installBtn = document.getElementById('install-btn');
+
+let deferredPrompt;
 
 // --- Service Worker Registration ---
 if ('serviceWorker' in navigator) {
@@ -15,6 +18,30 @@ if ('serviceWorker' in navigator) {
             .catch(err => console.error('SW registration failed:', err));
     });
 }
+
+// --- PWA Install Logic ---
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent the mini-infobar from appearing on mobile
+    e.preventDefault();
+    // Stash the event so it can be triggered later.
+    deferredPrompt = e;
+    // Update UI notify the user they can install the PWA
+    installBtn.classList.remove('hidden');
+});
+
+installBtn.addEventListener('click', async () => {
+    // Hide the app provided install promotion
+    installBtn.classList.add('hidden');
+    // Show the install prompt
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        // Wait for the user to respond to the prompt
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response to the install prompt: ${outcome}`);
+        // We've used the prompt, so clear it
+        deferredPrompt = null;
+    }
+});
 
 // --- Core Logic ---
 
