@@ -114,6 +114,12 @@ button:active {
     border: 1px solid var(--secondary-color);
 }
 
+.status.error {
+    background-color: rgba(207, 102, 121, 0.1);
+    color: #cf6679;
+    border: 1px solid #cf6679;
+}
+
 .hidden {
     display: none;
 }
