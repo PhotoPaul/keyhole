@@ -25,22 +25,22 @@ window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     // Stash the event so it can be triggered later.
     deferredPrompt = e;
-    // Update UI notify the user they can install the PWA
-    installBtn.classList.remove('hidden');
     console.log('beforeinstallprompt fired');
 });
 
 installBtn.addEventListener('click', async () => {
-    // Hide the app provided install promotion
-    installBtn.classList.add('hidden');
-    // Show the install prompt
     if (deferredPrompt) {
+        // Show the install prompt
         deferredPrompt.prompt();
         // Wait for the user to respond to the prompt
         const { outcome } = await deferredPrompt.userChoice;
         console.log(`User response to the install prompt: ${outcome}`);
         // We've used the prompt, so clear it
         deferredPrompt = null;
+    } else {
+        // If the event hasn't fired, we can't trigger the prompt.
+        // This usually means it's already installed, or the browser blocked it.
+        showStatus('Installation not ready or already installed.', 'error');
     }
 });
 

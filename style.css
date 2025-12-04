@@ -134,3 +134,9 @@ button:active {
 .info ol {
     padding-left: 20px;
 }
+
+@media all and (display-mode: standalone) {
+    #install-btn {
+        display: none;
+    }
+}
