@@ -142,3 +142,50 @@ button:active {
         display: none;
     }
 }
+
+/* New Styles for Main Page Redesign */
+
+.settings-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: var(--text-color);
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    z-index: 10;
+}
+
+.settings-icon:hover {
+    opacity: 1;
+    color: var(--accent-color);
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* Center vertically if container height allows */
+    align-items: center;
+    min-height: 80vh;
+    /* Adjust as needed */
+}
+
+.manual-entry {
+    display: flex;
+    width: 100%;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.main-input {
+    flex-grow: 1;
+    margin-bottom: 0 !important;
+    /* Override generic input margin */
+}
+
+.main-button {
+    flex: 0 0 auto;
+    /* Don't grow, size to content */
+    padding: 12px 24px;
+}

@@ -14,6 +14,10 @@ const installBtn = document.getElementById('install-btn');
 
 let deferredPrompt;
 
+if (installBtn) {
+    installBtn.classList.add('hidden');
+}
+
 // --- Service Worker Registration ---
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -30,23 +34,31 @@ window.addEventListener('beforeinstallprompt', (e) => {
     // Stash the event so it can be triggered later.
     deferredPrompt = e;
     console.log('beforeinstallprompt fired');
-});
-
-installBtn.addEventListener('click', async () => {
-    if (deferredPrompt) {
-        // Show the install prompt
-        deferredPrompt.prompt();
-        // Wait for the user to respond to the prompt
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log(`User response to the install prompt: ${outcome}`);
-        // We've used the prompt, so clear it
-        deferredPrompt = null;
-    } else {
-        // If the event hasn't fired, we can't trigger the prompt.
-        // This usually means it's already installed, or the browser blocked it.
-        showStatus('Installation not ready or already installed.', 'error');
+    // Show the install button now that we can trigger the prompt
+    if (installBtn) {
+        installBtn.classList.remove('hidden');
     }
 });
+
+if (installBtn) {
+    installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            // Show the install prompt
+            deferredPrompt.prompt();
+            // Wait for the user to respond to the prompt
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`User response to the install prompt: ${outcome}`);
+            // We've used the prompt, so clear it
+            deferredPrompt = null;
+            // Hide the button immediately after use, as the prompt can't be triggered again
+            installBtn.classList.add('hidden');
+        } else {
+            // If the event hasn't fired or was already used
+            installBtn.classList.add('hidden');
+            showStatus('App is likely installed. Check your home screen.', 'info');
+        }
+    });
+}
 
 // --- Core Logic ---
 
@@ -176,43 +188,105 @@ async function handleShare() {
     }
 }
 
-// --- Event Listeners ---
+// --- Initialization & Page Routing ---
 
-saveBtn.addEventListener('click', () => {
-    const val = domainInput.value;
-    const proxyUrl = proxyUrlInput.value;
-    const proxySecret = proxySecretInput.value;
+// 1. Get current page context (simple check based on elements existence)
+const isSettingsPage = !!document.getElementById('base-domain');
+const isMainPage = !!document.getElementById('manual-url');
 
-    if (val) {
-        const saved = setBaseDomain(val);
-        domainInput.value = saved; // Update UI with cleaned value
+// 2. Helper to load settings into form
+function loadSettingsToForm() {
+    if (!isSettingsPage) return;
+    domainInput.value = getBaseDomain();
+    const proxySettings = getProxySettings();
+    proxyUrlInput.value = proxySettings.url;
+    proxySecretInput.value = proxySettings.secret;
+}
 
-        const savedProxy = setProxySettings(proxyUrl, proxySecret);
-        proxyUrlInput.value = savedProxy.url;
+// 3. Main Logic Flow
+(async function init() {
+    const savedDomain = localStorage.getItem(STORAGE_KEY);
 
-        showStatus('Settings saved!');
+    // Redirect Logic
+    if (!savedDomain && !isSettingsPage) {
+        // No settings saved, and we are not on the settings page -> Redirect to settings
+        window.location.replace('settings.html');
+        return;
     }
-});
 
-resetBtn.addEventListener('click', () => {
-    localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem(PROXY_URL_KEY);
-    localStorage.removeItem(PROXY_SECRET_KEY);
+    if (isSettingsPage) {
+        // We are on settings page. Load values.
+        loadSettingsToForm();
 
-    domainInput.value = DEFAULT_DOMAIN;
-    proxyUrlInput.value = "";
-    proxySecretInput.value = "";
+        // Save Button Logic
+        if (saveBtn) {
+            saveBtn.addEventListener('click', () => {
+                const val = domainInput.value;
+                const proxyUrl = proxyUrlInput.value;
+                const proxySecret = proxySecretInput.value;
 
-    showStatus('Reset to default!');
-});
+                if (val) {
+                    setBaseDomain(val);
+                    setProxySettings(proxyUrl, proxySecret);
+                    showStatus('Settings saved!', 'success');
+                    window.location.replace('index.html');
+                } else {
+                    showStatus('Base Domain is required.', 'error');
+                }
+            });
+        }
 
-// --- Initialization ---
+        // Reset Button Logic
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                localStorage.removeItem(STORAGE_KEY);
+                localStorage.removeItem(PROXY_URL_KEY);
+                localStorage.removeItem(PROXY_SECRET_KEY);
+                loadSettingsToForm(); // Clear inputs
+                // Since we are on settings page and just cleared settings, stays here.
+                showStatus('Reset to default!', 'info');
+            });
+        }
 
-// 1. Load saved settings
-domainInput.value = getBaseDomain();
-const proxySettings = getProxySettings();
-proxyUrlInput.value = proxySettings.url;
-proxySecretInput.value = proxySettings.secret;
+    } else if (isMainPage) {
+        // We are on main page. 
 
-// 2. Check if we are handling a share
-handleShare();
+        // Handle incoming shares first
+        await handleShare();
+
+        // Settings Icon Click
+        const settingsIcon = document.getElementById('settings-icon');
+        if (settingsIcon) {
+            settingsIcon.addEventListener('click', () => {
+                window.location.href = 'settings.html';
+            });
+        }
+
+        // Manual Entry Logic
+        const manualInput = document.getElementById('manual-url');
+        const goBtn = document.getElementById('go-btn');
+
+        async function processManualUrl() {
+            const url = manualInput.value;
+            if (url) {
+                showStatus('Processing...', 'info');
+                const unwrapped = await unwrapUrl(url);
+                const base = getBaseDomain();
+                const finalUrl = `${base}/latest/${unwrapped}`;
+                window.location.href = finalUrl;
+            }
+        }
+
+        if (goBtn) {
+            goBtn.addEventListener('click', processManualUrl);
+        }
+
+        if (manualInput) {
+            manualInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    processManualUrl();
+                }
+            });
+        }
+    }
+})();

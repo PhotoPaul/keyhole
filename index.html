@@ -10,38 +10,30 @@
 </head>
 
 <body>
-    <div class="container">
-        <h1>Keyhole Settings</h1>
+    <div class="settings-icon" id="settings-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor">
+            <path
+                d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-1 13.5l103 78-110 190-119-50q-11 8-23 15t-24 12l-16 128H370Zm112-260q58 0 99-41t41-99q0-58-41-99t-99-41q-59 0-99.5 41T342-480q0 58 40.5 99t99.5 41Zm0-80q-25 0-42.5-17.5T422-480q0-25 17.5-42.5T482-540q25 0 42.5 17.5T542-480q0 25-17.5 42.5T482-420Zm-220 80l-10-20 60-34-10-56H250l-10-50 52-20q4-14 10-26l-40-52 10-20 60 10q14-8 28-12l10-60h20l10 60q14 4 28 12l60-10 10 20-40 52q6 12 10 26l52 20-10 50h-52l-10 56 60 34-10 20-64-16q-10 12-22 22l16 64-20 10-52-40q-12 6-26 10l-20 52h-20l-20-52q-14-4-26-10l-52 40-20-10 16-64q-12-10-22-22l-64 16Z" />
+        </svg>
+    </div>
 
-        <div class="card">
-            <label for="base-domain">Base Domain</label>
-            <input type="url" id="base-domain" placeholder="https://archive.fo">
-            <p class="hint">The domain used to construct the archive URL.</p>
+    <div class="container main-container">
+        <h1>Keyhole</h1>
 
-            <label for="proxy-url" style="margin-top: 15px;">CORS Proxy URL (Optional)</label>
-            <input type="url" id="proxy-url" placeholder="http://localhost:3000">
-            <p class="hint">Service to unwrap shortened URLs (e.g. share.google).</p>
-
-            <label for="proxy-secret" style="margin-top: 15px;">Proxy Secret (Optional)</label>
-            <input type="password" id="proxy-secret" placeholder="Secret Token">
-            <p class="hint">Authorization token for the proxy service.</p>
-
-            <div class="actions">
-                <button id="save-btn" class="primary">Save Settings</button>
-                <button id="reset-btn" class="secondary">Reset Default</button>
-            </div>
+        <div class="manual-entry">
+            <input type="url" id="manual-url" placeholder="Paste URL here..." class="main-input">
+            <button id="go-btn" class="primary main-button">Go</button>
         </div>
 
         <div id="status-message" class="status hidden"></div>
 
-        <div class="info">
-            <button id="install-btn" class="primary" style="margin-bottom: 20px; width: 100%;">Install App</button>
-            <p><strong>How to use:</strong></p>
-            <ol>
-                <li>Install this app on your device.</li>
-                <li>Share a URL from any other app.</li>
-                <li>Select "Keyhole" from the share menu.</li>
-            </ol>
+        <div class="info" style="margin-top: 50px;">
+            <!-- Optional: keep install button if desired, but user asked for simple main screen. 
+                  Let's keep it but maybe minimal/hidden? 
+                  The prompt implied "redirected to the main screen... where the user can manually paste a url".
+                  I'll keep the install button at the bottom just in case, but make it clean. -->
+            <button id="install-btn" class="secondary" style="width: 100%;">Install App</button>
+            <p style="text-align: center; margin-top: 20px;">Share to Keyhole or paste above.</p>
         </div>
     </div>
     <script src="app.js"></script>

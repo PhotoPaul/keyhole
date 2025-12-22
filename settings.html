@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keyhole Settings</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+    <!-- Load FontAwesome for icons (optional, or use SVG) -->
+</head>
+
+<body>
+    <div class="container">
+        <h1>Settings</h1>
+
+        <div class="card">
+            <label for="base-domain">Base Domain</label>
+            <input type="url" id="base-domain" placeholder="https://archive.fo">
+            <p class="hint">The domain used to construct the archive URL.</p>
+
+            <label for="proxy-url" style="margin-top: 15px;">CORS Proxy URL (Optional)</label>
+            <input type="url" id="proxy-url" placeholder="http://localhost:3000">
+            <p class="hint">Service to unwrap shortened URLs (e.g. share.google).</p>
+
+            <label for="proxy-secret" style="margin-top: 15px;">Proxy Secret (Optional)</label>
+            <input type="password" id="proxy-secret" placeholder="Secret Token">
+            <p class="hint">Authorization token for the proxy service.</p>
+
+            <div class="actions">
+                <button id="save-btn" class="primary">Save & Go Back</button>
+            </div>
+            <div class="actions" style="margin-top: 10px;">
+                 <button id="reset-btn" class="secondary">Reset Default</button>
+            </div>
+        </div>
+
+        <div id="status-message" class="status hidden"></div>
+        
+        <div class="info">
+             <p><a href="index.html" style="color: var(--accent-color); text-decoration: none;">&larr; Back to App</a></p>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+
+</html>
