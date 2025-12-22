@@ -18,7 +18,15 @@
 
         <div class="card">
             <label for="base-domain">Base Domain</label>
-            <input type="url" id="base-domain" placeholder="https://archive.fo">
+            <select id="base-domain">
+                <option value="https://archive.ph">archive.ph</option>
+                <option value="https://archive.fo">archive.fo</option>
+                <option value="https://archive.is">archive.is</option>
+                <option value="https://archive.md">archive.md</option>
+                <option value="https://archive.li">archive.li</option>
+                <option value="https://archive.vn">archive.vn</option>
+                <option value="https://archive.today">archive.today</option>
+            </select>
             <p class="hint">The domain used to construct the archive URL.</p>
 
             <label for="proxy-url" style="margin-top: 15px;">CORS Proxy URL (Optional)</label>

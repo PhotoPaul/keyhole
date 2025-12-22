@@ -1,4 +1,4 @@
-const DEFAULT_DOMAIN = "https://archive.fo";
+const DEFAULT_DOMAIN = "https://archive.ph";
 const STORAGE_KEY = "archive_share_base_domain";
 const PROXY_URL_KEY = "archive_share_proxy_url";
 const PROXY_SECRET_KEY = "archive_share_proxy_secret";
