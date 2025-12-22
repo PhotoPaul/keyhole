@@ -46,7 +46,8 @@ label {
 }
 
 input[type="url"],
-input[type="password"] {
+input[type="password"],
+input[type="text"] {
     width: 100%;
     padding: 12px;
     background-color: var(--input-bg);
@@ -59,9 +60,39 @@ input[type="password"] {
 }
 
 input[type="url"]:focus,
-input[type="password"]:focus {
+input[type="password"]:focus,
+input[type="text"]:focus {
     outline: 2px solid var(--accent-color);
     border-color: transparent;
+}
+
+.card textarea {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--input-bg) !important;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-color) !important;
+    font-size: 1rem;
+    box-sizing: border-box;
+    margin-bottom: 8px;
+    font-family: inherit;
+    resize: vertical;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+textarea:focus {
+    outline: 2px solid var(--accent-color);
+    border-color: transparent;
+}
+
+input:disabled,
+textarea:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #222 !important;
+    /* Slightly darker */
 }
 
 .hint {

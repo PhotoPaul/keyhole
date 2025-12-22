@@ -2,11 +2,15 @@ const DEFAULT_DOMAIN = "https://archive.fo";
 const STORAGE_KEY = "archive_share_base_domain";
 const PROXY_URL_KEY = "archive_share_proxy_url";
 const PROXY_SECRET_KEY = "archive_share_proxy_secret";
+const DEFAULT_PROXY_URL = "https://keyhole.pavmeg.com/cors";
+const DECLOAK_DOMAINS_KEY = "archive_share_decloak_domains";
+const DEFAULT_DECLOAK_DOMAINS = ["share.google", "search.app"];
 
 // DOM Elements
 const domainInput = document.getElementById('base-domain');
 const proxyUrlInput = document.getElementById('proxy-url');
 const proxySecretInput = document.getElementById('proxy-secret');
+const decloakDomainsInput = document.getElementById('decloak-domains');
 const saveBtn = document.getElementById('save-btn');
 const resetBtn = document.getElementById('reset-btn');
 const statusMsg = document.getElementById('status-message');
@@ -80,8 +84,12 @@ function setBaseDomain(domain) {
 }
 
 function getProxySettings() {
+    const storedUrl = localStorage.getItem(PROXY_URL_KEY);
+    // If storedUrl is null, use default. If it's empty string, keep it empty (no proxy).
+    const url = storedUrl === null ? DEFAULT_PROXY_URL : storedUrl;
+
     return {
-        url: localStorage.getItem(PROXY_URL_KEY) || "",
+        url: url,
         secret: localStorage.getItem(PROXY_SECRET_KEY) || ""
     };
 }
@@ -98,11 +106,8 @@ function setProxySettings(url, secret) {
         cleanUrl = cleanUrl.slice(0, -1);
     }
 
-    if (cleanUrl) {
-        localStorage.setItem(PROXY_URL_KEY, cleanUrl);
-    } else {
-        localStorage.removeItem(PROXY_URL_KEY);
-    }
+    // Save as is, even if empty string
+    localStorage.setItem(PROXY_URL_KEY, cleanUrl);
 
     if (secret) {
         localStorage.setItem(PROXY_SECRET_KEY, secret);
@@ -113,9 +118,40 @@ function setProxySettings(url, secret) {
     return { url: cleanUrl, secret };
 }
 
+function getDecloakDomains() {
+    const stored = localStorage.getItem(DECLOAK_DOMAINS_KEY);
+    if (!stored) {
+        return DEFAULT_DECLOAK_DOMAINS;
+    }
+    // Stored as JSON array string
+    try {
+        return JSON.parse(stored);
+    } catch (e) {
+        console.error("Failed to parse decloak domains", e);
+        return DEFAULT_DECLOAK_DOMAINS;
+    }
+}
+
+function setDecloakDomains(inputString) {
+    if (!inputString) {
+        localStorage.removeItem(DECLOAK_DOMAINS_KEY);
+        return DEFAULT_DECLOAK_DOMAINS;
+    }
+    // Split by newline, trim, filter empty
+    const domains = inputString.split('\n')
+        .map(d => d.trim())
+        .filter(d => d.length > 0);
+
+    localStorage.setItem(DECLOAK_DOMAINS_KEY, JSON.stringify(domains));
+    return domains;
+}
+
 async function unwrapUrl(url) {
-    // Only unwrap share.google and search.app links
-    if (!url.includes('share.google') && !url.includes('search.app')) {
+    // Check against configured decloak domains
+    const domains = getDecloakDomains();
+    const shouldUnwrap = domains.some(domain => url.includes(domain));
+
+    if (!shouldUnwrap) {
         return url;
     }
 
@@ -195,12 +231,27 @@ const isSettingsPage = !!document.getElementById('base-domain');
 const isMainPage = !!document.getElementById('manual-url');
 
 // 2. Helper to load settings into form
+// Helper to toggle fields
+function updateProxyFieldState() {
+    if (!proxyUrlInput) return;
+    const hasProxy = !!proxyUrlInput.value.trim();
+    if (proxySecretInput) proxySecretInput.disabled = !hasProxy;
+    if (decloakDomainsInput) decloakDomainsInput.disabled = !hasProxy;
+}
+
 function loadSettingsToForm() {
     if (!isSettingsPage) return;
     domainInput.value = getBaseDomain();
     const proxySettings = getProxySettings();
     proxyUrlInput.value = proxySettings.url;
     proxySecretInput.value = proxySettings.secret;
+
+    // Load decloak domains
+    const domains = getDecloakDomains();
+    decloakDomainsInput.value = domains.join('\n');
+
+    // Initial state update
+    updateProxyFieldState();
 }
 
 // 3. Main Logic Flow
@@ -218,16 +269,22 @@ function loadSettingsToForm() {
         // We are on settings page. Load values.
         loadSettingsToForm();
 
-        // Save Button Logic
         if (saveBtn) {
+            // Listen for input changes to toggle state
+            if (proxyUrlInput) {
+                proxyUrlInput.addEventListener('input', updateProxyFieldState);
+            }
+
             saveBtn.addEventListener('click', () => {
                 const val = domainInput.value;
                 const proxyUrl = proxyUrlInput.value;
                 const proxySecret = proxySecretInput.value;
+                const decloakVal = decloakDomainsInput.value;
 
                 if (val) {
                     setBaseDomain(val);
                     setProxySettings(proxyUrl, proxySecret);
+                    setDecloakDomains(decloakVal);
                     showStatus('Settings saved!', 'success');
                     window.location.replace('index.html');
                 } else {
@@ -242,6 +299,7 @@ function loadSettingsToForm() {
                 localStorage.removeItem(STORAGE_KEY);
                 localStorage.removeItem(PROXY_URL_KEY);
                 localStorage.removeItem(PROXY_SECRET_KEY);
+                localStorage.removeItem(DECLOAK_DOMAINS_KEY);
                 loadSettingsToForm(); // Clear inputs
                 // Since we are on settings page and just cleared settings, stays here.
                 showStatus('Reset to default!', 'info');

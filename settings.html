@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Keyhole Settings</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="style.css">
+    <script>
+        document.write('<link rel="stylesheet" href="style.css?v=' + Date.now() + '">');
+    </script>
     <!-- Load FontAwesome for icons (optional, or use SVG) -->
 </head>
 
@@ -20,28 +22,35 @@
             <p class="hint">The domain used to construct the archive URL.</p>
 
             <label for="proxy-url" style="margin-top: 15px;">CORS Proxy URL (Optional)</label>
-            <input type="url" id="proxy-url" placeholder="http://localhost:3000">
+            <input type="url" id="proxy-url" placeholder="https://keyhole.pavmeg.com/cors">
             <p class="hint">Service to unwrap shortened URLs (e.g. share.google).</p>
 
-            <label for="proxy-secret" style="margin-top: 15px;">Proxy Secret (Optional)</label>
+            <label for="proxy-secret" style="margin-top: 15px;">Proxy Secret</label>
             <input type="password" id="proxy-secret" placeholder="Secret Token">
             <p class="hint">Authorization token for the proxy service.</p>
+
+            <label for="decloak-domains" style="margin-top: 15px;">Decloak Domains</label>
+            <textarea id="decloak-domains" rows="4" placeholder="share.google&#10;search.app"></textarea>
+            <p class="hint">Enter domains separated by new lines.</p>
 
             <div class="actions">
                 <button id="save-btn" class="primary">Save & Go Back</button>
             </div>
             <div class="actions" style="margin-top: 10px;">
-                 <button id="reset-btn" class="secondary">Reset Default</button>
+                <button id="reset-btn" class="secondary">Reset Default</button>
             </div>
         </div>
 
         <div id="status-message" class="status hidden"></div>
-        
+
         <div class="info">
-             <p><a href="index.html" style="color: var(--accent-color); text-decoration: none;">&larr; Back to App</a></p>
+            <p><a href="index.html" style="color: var(--accent-color); text-decoration: none;">&larr; Back to App</a>
+            </p>
         </div>
     </div>
-    <script src="app.js"></script>
+    <script>
+        document.write('<script src="app.js?v=' + Date.now() + '"><\/script>');
+    </script>
 </body>
 
 </html>

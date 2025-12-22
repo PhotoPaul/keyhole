@@ -1,10 +1,8 @@
-const CACHE_NAME = 'archive-share-v2';
+const CACHE_NAME = 'archive-share-v8';
 const ASSETS = [
     './',
     './index.html',
     './settings.html',
-    './style.css',
-    './app.js',
     './manifest.json'
 ];
 
@@ -40,8 +38,8 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
     // Network-First Strategy
     // 1. Try network
-    // 2. If successful, update cache and return
-    // 3. If failed (offline), return from cache
+    // 2. If successful, update cache (using clean URL) and return
+    // 3. If failed (offline), return from cache (ignoring query params)
     event.respondWith(
         fetch(event.request)
             .then(networkResponse => {
@@ -54,14 +52,18 @@ self.addEventListener('fetch', (event) => {
                 const responseToCache = networkResponse.clone();
                 caches.open(CACHE_NAME)
                     .then(cache => {
-                        cache.put(event.request, responseToCache);
+                        // Store using the clean URL (no query params) so we don't duplicate files
+                        // e.g. style.css?v=123 -> style.css
+                        const cleanUrl = event.request.url.split('?')[0];
+                        cache.put(cleanUrl, responseToCache);
                     });
 
                 return networkResponse;
             })
             .catch(() => {
                 // Network failed, try cache
-                return caches.match(event.request);
+                // ignoreSearch: true allows matching style.css when style.css?v=123 is requested (or vice versa)
+                return caches.match(event.request, { ignoreSearch: true });
             })
     );
 });
