@@ -102,8 +102,8 @@ function setProxySettings(url, secret) {
 }
 
 async function unwrapUrl(url) {
-    // Only unwrap share.google links
-    if (!url.includes('share.google')) {
+    // Only unwrap share.google and search.app links
+    if (!url.includes('share.google') && !url.includes('search.app')) {
         return url;
     }
 
