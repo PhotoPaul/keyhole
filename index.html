@@ -18,6 +18,14 @@
             <input type="url" id="base-domain" placeholder="https://archive.fo">
             <p class="hint">The domain used to construct the archive URL.</p>
 
+            <label for="proxy-url" style="margin-top: 15px;">CORS Proxy URL (Optional)</label>
+            <input type="url" id="proxy-url" placeholder="http://localhost:3000">
+            <p class="hint">Service to unwrap shortened URLs (e.g. share.google).</p>
+
+            <label for="proxy-secret" style="margin-top: 15px;">Proxy Secret (Optional)</label>
+            <input type="password" id="proxy-secret" placeholder="Secret Token">
+            <p class="hint">Authorization token for the proxy service.</p>
+
             <div class="actions">
                 <button id="save-btn" class="primary">Save Settings</button>
                 <button id="reset-btn" class="secondary">Reset Default</button>
