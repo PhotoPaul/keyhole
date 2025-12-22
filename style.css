@@ -45,7 +45,8 @@ label {
     font-weight: 500;
 }
 
-input[type="url"] {
+input[type="url"],
+input[type="password"] {
     width: 100%;
     padding: 12px;
     background-color: var(--input-bg);
@@ -57,7 +58,8 @@ input[type="url"] {
     margin-bottom: 8px;
 }
 
-input[type="url"]:focus {
+input[type="url"]:focus,
+input[type="password"]:focus {
     outline: 2px solid var(--accent-color);
     border-color: transparent;
 }
